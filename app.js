@@ -8,12 +8,19 @@ const PADDLE_MARGIN_BOTTOM = 50;
 // ball dimensions 
 const BALL_RADIUS = 8;
 let LIFE = 3;
+let SCORE = 0;
+let SCORE_UNIT = 10;
+let LEVEL = 1;
+let MAX_LEVEL = 3;
+
+let GAME_OVER =false;
 // background image 
 const BACKGROUND = new Image;
 BACKGROUND.src = "./background.jpg";
 
 let leftArrow = false;
 let rightArrow = false;
+let pressForStart = false;
 
 
 
@@ -72,7 +79,7 @@ const ball = {
     x : cvs.width/2,
     y : paddle.y - BALL_RADIUS,
     radius : BALL_RADIUS,
-    speed : 4,
+    speed : 3,
     dx : 3*(Math.random()*2-1),
     dy : -3
 }
@@ -91,12 +98,6 @@ function drawBall(){
     ctx.closePath();
 }
 
-//common draw functions
-function draw(){
-    drawPaddle();
-    drawBall();
-    drawBricks();
-}
 
 // COLLISION OF BALL 
 
@@ -136,33 +137,36 @@ function ballPaddleCollision() {
         
     }
 }
+document.addEventListener("keydown", function(event){
+    if(event.key === "s"){
+        pressForStart = true;
+    } 
+    
+    });
 
 //  function for move the ball 
 function moveBall(){
+    if(pressForStart){
     ball.x += ball.dx;
     ball.y += ball.dy;
+    }
 }
 
 
-// update functions 
-function update(){
-    movePaddle();
-    moveBall();
-    ballWallCollision();
-    ballPaddleCollision();
-}
+
+
 
 // BRICK CREATE 
 const brick = {
     row: 1,
-    column: 5,
-    width: 55,
+    column: 7,
+    width: 35,
     height: 20,
     offSetLeft: 20,
     offSetTop: 20,
     marginTop: 40,
-    fillColor: "purple",
-    strokeColor: "pink"
+    fillColor: "green",
+    strokeColor: "red"
 }
 
 let bricks = [];
@@ -197,8 +201,93 @@ function drawBricks(){
     }
 }
 
+function ballBrickCollision(){
+    for(let r=0; r< brick.row; r++){
+        for(let c=0; c<brick.column; c++){
+            let b = bricks[r][c];
+            if(b.status){
+                if(ball.x + ball.radius > b.x &&
+                    ball.x + ball.radius < b.x + brick.width &&
+                    ball.y + ball.radius > b.y &&
+                    ball.y - ball.radius < b.y + brick.height
+                    ){
+                        ball.dy = -ball.dy;
+                        b.status = false;
+                        SCORE += SCORE_UNIT;
+                    }
+            }
+        }
+    }
+}
 
 
+// function to give the statistics data of the game
+function showGamePoints(text, textX, textY){
+    ctx.fillStyle = "blue";
+    ctx.font = "25px Germania One";
+    ctx.fillText(text, textX, textY);
+
+}
+
+function gameOver(){
+    if(LIFE < 0){
+        GAME_OVER = true;
+        showGamePoints("Game Over", cvs.width/2 - 40, cvs.height/2); 
+        showGamePoints("Refresh to Play Again!", cvs.width/2 - 100, cvs.height/2 + 30); 
+    }
+}
+
+function levelUp(){
+    let isLevelDone = true;
+    for(let r=0; r< brick.row; r++){
+        for(let c=0; c< brick.column; c++){
+            isLevelDone = isLevelDone && !bricks[r][c].status;
+        }
+    }
+
+    if(isLevelDone){
+        if(LEVEL >= MAX_LEVEL){
+            GAME_OVER = true;
+            showGamePoints("Win Win !", cvs.width/2-45, cvs.height/2);
+            
+        }
+        brick.row++;
+        createBricks();
+        ball.speed += 0.2;
+        resetBall();
+        LEVEL++;
+    }
+} 
+
+
+
+//common draw functions
+function draw(){
+    drawPaddle();
+    drawBall();
+    drawBricks();
+
+    showGamePoints("Score : "+SCORE, 25,25);
+    showGamePoints("Life : "+LIFE, cvs.width-90,25);
+    showGamePoints("Level : "+LEVEL, cvs.width/2-35,25);
+
+    if(!pressForStart){
+        showGamePoints("PRESS  S  FOR START", 55, 200);
+    }
+    
+}
+
+// update functions 
+function update(){
+    movePaddle();
+    moveBall();
+    ballWallCollision();
+    ballPaddleCollision();
+    ballBrickCollision();
+    
+    gameOver();
+    levelUp();
+}
 
 
 
@@ -207,6 +296,8 @@ function loop(){
     ctx.drawImage(BACKGROUND,0,0);
     draw();
     update();
+    if(!GAME_OVER){
     requestAnimationFrame(loop);
+    }
 }
 loop()
