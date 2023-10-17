@@ -1,18 +1,19 @@
-const cvs = document.getElementsById("canvas");
+const cvs = document.getElementById("breakOut");
 const ctx = cvs.getContext("2d");
-
-// ctx.fillStyle = "blue";
-// ctx.fillRect(x,y,width,height);
-
-// ctx.fillStyle = "Green";
-// ctx.fillRect(x,y+c,width,height);
 
 // paddle dimensions 
 const PADDLE_WIDTH = 100;
 const PADDLE_HEIGHT = 20;
 const PADDLE_MARGIN_BOTTOM = 50; 
+// ball dimensions 
 const BALL_RADIUS = 8;
 let LIFE = 3;
+const BACKGROUND = new Image;
+BACKGROUND.src = "backgroundImg.jpg";
+
+let leftArrow = false;
+let rightArrow = false;
+
 
 
 // paddle object create for ball jumping
@@ -33,32 +34,10 @@ function drawPaddle(){
      ctx.strokeRect(paddle.x,paddle.y,paddle.width,paddle.height);
 }
 
-// draw functions
-function draw(){
-    drawPaddle();
-    drawBall();
-}
 
-// update functions 
-function update(){
-    movePaddle();
-    moveBall();
-    ballWallCollision();
-    ballPaddleCollision();
-}
-
-// control the paddle 
-function loop(){
-    ctx.drawImage(BACKGROUND,0,0);
-    draw();
-    update();
-    requestAnimationFrame(loop);
-}
 
 // control PADDLE 
 //function to check the key press
-let leftArrow = false;
-let rightArrow = false;
 
 document.addEventListener("keydown", function(event){
     if(event.key === "ArrowLeft"){
@@ -85,75 +64,99 @@ function movePaddle(){
     }
 }
 
-
-// creating the ball object on paddle 
-const ball = {
-    x : cvs.width/2,
-    y : paddle.y - BALL_RADIUS,
-    radius : BALL_RADIUS,
-    speed : 4,
-    dx : 3*(Math.random()*2-1),
-    dy : -3
+// draw functions
+function draw(){
+    drawPaddle();
+    // drawBall();
 }
 
-// draw the ball 
-function drawBall(){
-    ctx.beginPath();
-
-    ctx.arc(ball.x,ball.y,ball.radius, 0, Math.PI*2);
-    ctx.fillStyle = "yellow";
-    ctx.fill();
-
-    ctx.strokeStyle = "orange";
-    ctx.stroke();
-
-    ctx.closePath();
+// update functions 
+function update(){
+    movePaddle();
+    // moveBall();
+    // ballWallCollision();
+    // ballPaddleCollision();
 }
 
-function moveBall(){
-
-
+// control the paddle 
+function loop(){
+    ctx.drawImage(BACKGROUND,0,0);
+    draw();
+    update();
+    requestAnimationFrame(loop);
 }
+loop()
 
-function ballWallCollision(){
-    if(ball.x = ball.radius > cvs.width || 
-            ball.x - ball.radius <0){
-                ball.dx = -ball.dx; 
-            }
-    if(ball.y - ball.radius < o){
-        ball.dy = -ball.dy;
-    }
-    if(ball.y + ball.radius > cvs.height){
-        LIFE--;
-        resetball();
-    }
-}
 
-// if we lose a life then reset the position of ball 
-function resetBall(){
-    ball.x = cvs.width/2;
-    ball.y = paddle.y - BALL_RADIUS;
-    ball.dx = 3*(Math.random()*2 - 1);
-    ball.dy = -3;
-}
 
-function ballPaddleCollision() {
-    if(ball.x < paddle.x + paddle.width &&
-        ball.x > paddle.x &&
-        ball.y < paddle.y + paddle.height &&
-        ball.y > paddle,y)  {
+// // creating the ball object on paddle 
+// const ball = {
+//     x : cvs.width/2,
+//     y : paddle.y - BALL_RADIUS,
+//     radius : BALL_RADIUS,
+//     speed : 4,
+//     dx : 3*(Math.random()*2-1),
+//     dy : -3
+// }
+
+// // draw the ball 
+// function drawBall(){
+//     ctx.beginPath();
+
+//     ctx.arc(ball.x,ball.y,ball.radius, 0, Math.PI*2);
+//     ctx.fillStyle = "yellow";
+//     ctx.fill();
+
+//     ctx.strokeStyle = "orange";
+//     ctx.stroke();
+
+//     ctx.closePath();
+// }
+
+// function moveBall(){
+
+
+// }
+
+// function ballWallCollision(){
+//     if(ball.x = ball.radius > cvs.width || 
+//             ball.x - ball.radius <0){
+//                 ball.dx = -ball.dx; 
+//             }
+//     if(ball.y - ball.radius < o){
+//         ball.dy = -ball.dy;
+//     }
+//     if(ball.y + ball.radius > cvs.height){
+//         LIFE--;
+//         resetball();
+//     }
+// }
+
+// // if we lose a life then reset the position of ball 
+// function resetBall(){
+//     ball.x = cvs.width/2;
+//     ball.y = paddle.y - BALL_RADIUS;
+//     ball.dx = 3*(Math.random()*2 - 1);
+//     ball.dy = -3;
+// }
+
+// function ballPaddleCollision() {
+//     if(ball.x < paddle.x + paddle.width &&
+//         ball.x > paddle.x &&
+//         ball.y < paddle.y + paddle.height &&
+//         ball.y > paddle,y)  {
             
-            let collidePoint = 
-                ball.x - (paddle.x + paddle.width/2);
+//             let collidePoint = 
+//                 ball.x - (paddle.x + paddle.width/2);
 
-            collidePoint = collidePoint / (paddle.width/2);
+//             collidePoint = collidePoint / (paddle.width/2);
 
-            let angle = collidePoint * Math.PI/3;
+//             let angle = collidePoint * Math.PI/3;
 
-            ball.dx = ball.speed * Math.si(angle);
-            ball.dy = -ball.speed * Math.cos(angle);
-        }
-}
+//             ball.dx = ball.speed * Math.si(angle);
+//             ball.dy = -ball.speed * Math.cos(angle);
+//         }
+// }
 
 
 
