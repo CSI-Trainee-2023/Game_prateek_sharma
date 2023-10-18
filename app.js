@@ -22,6 +22,17 @@ let leftArrow = false;
 let rightArrow = false;
 let pressForStart = false;
 
+let BRICK_HIT = new Audio();
+let PADDLE_HIT = new Audio();
+let LIFE_LOST = new Audio();
+let WIN_SOUND = new Audio();
+
+
+BRICK_HIT.src = "./sounds/brick_hit.mp3";
+PADDLE_HIT.src = "./sounds/paddle_hit.mp3";
+LIFE_LOST.src = "./sounds/life_lost.mp3";
+WIN_SOUND.src = "./sounds/win_sound.mp3";
+
 
 
 // paddle object create for ball jumping
@@ -112,6 +123,7 @@ function ballWallCollision(){
     }  
     if(ball.y + ball.radius > cvs.height){
         LIFE--;
+        LIFE_LOST.play();
         resetBall();
     }
 }
@@ -134,7 +146,7 @@ function ballPaddleCollision() {
 
         ball.dx = ball.speed * Math.sin(angle);
         ball.dy = -ball.speed * Math.cos(angle);
-        
+        PADDLE_HIT.play();
     }
 }
 document.addEventListener("keydown", function(event){
@@ -214,6 +226,7 @@ function ballBrickCollision(){
                         ball.dy = -ball.dy;
                         b.status = false;
                         SCORE += SCORE_UNIT;
+                        BRICK_HIT.play();
                     }
             }
         }
@@ -248,6 +261,7 @@ function levelUp(){
     if(isLevelDone){
         if(LEVEL >= MAX_LEVEL){
             GAME_OVER = true;
+            WIN_SOUND.play();
             showGamePoints("Win Win !", cvs.width/2-45, cvs.height/2);
             
         }
